@@ -19,11 +19,11 @@ function getWebviewContent() {
     <div id="response"></div>
 
     <script>
-      const vscode = acquireVsCodeApi()
+      const vscode = acquireVsCodeApi();
 
       document.getElementById('askBtn').addEventListener('click', () => {
-        const text = document.getElementById('prompt').value
-        vscode.postMessage({ command: 'chat', text })
+        const text = document.getElementById('prompt').value;
+        vscode.postMessage({ command: 'chat', text });
       })
     </script>
   </body>
