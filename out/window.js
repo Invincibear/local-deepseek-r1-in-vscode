@@ -39,22 +39,21 @@ function getWebviewContent() {
         e.preventDefault() // Stop the form from submitting
 
         const text = document.getElementById('prompt').value;
-        vscode.postMessage({ command: 'chat', text });
+        vscode.postMessage({
+          command: 'chat',
+          text,
+        });
       });
 
-      document.addEventListener('message', e => {
+      window.addEventListener('message', e => {
         const { command, text } = e.data;
-        log.debug({
-          command: command,
-          text:    text,
-        })
 
         if (command === 'chatResponse') {
           document.getElementById('response').innerHTML = text;
         }
       });
 
-      window.addEventListener('load', event => {
+      window.addEventListener('load', () => {
         document.getElementById('prompt').focus();
       });
     </script>

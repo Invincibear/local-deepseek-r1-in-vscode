@@ -52,11 +52,15 @@ function activate(context) {
                 try {
                     const streamResponse = await ollama_1.default.chat({
                         model: 'deepseek-r1:14b',
-                        messages: [{ role: 'user', content: userPrompt }],
                         stream: true,
+                        messages: [{
+                                role: 'user',
+                                content: userPrompt,
+                            }],
                     });
                     for await (const part of streamResponse) {
                         responseText += part.message.content;
+                        // console.log(responseText)
                         panel.webview.postMessage({
                             command: 'chatResponse',
                             text: responseText,
