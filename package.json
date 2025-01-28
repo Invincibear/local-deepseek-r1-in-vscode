@@ -14,7 +14,7 @@
   "contributes": {
     "commands": [
       {
-        "command": "local-deepseek-r1-in-vscode.helloWorld",
+        "command": "local-deepseek-r1-in-vscode.start",
         "title": "Chat with DeepSeek-R1"
       }
     ]

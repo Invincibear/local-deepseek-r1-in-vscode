@@ -1,27 +1,24 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
-import * as vscode from 'vscode';
-import llama from 'ollama';
-import getWebviewContent from './window';
+import * as vscode from 'vscode'
+import llama from 'ollama'
+import getWebviewContent from './window'
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+
 export function activate(context: vscode.ExtensionContext) {
 	const disposable = vscode.commands.registerCommand('local-deepseek-r1-in-vscode.start', () => {
-		vscode.window.showInformationMessage('Hello World from Local DeepSeek-R1 in VSCode!');
+		vscode.window.showInformationMessage('Hello World from Local DeepSeek-R1 in VSCode!')
 
 		const panel = vscode.window.createWebviewPanel(
 			'deepChat',
 			'DeepSeek R-1 Chat'
 			vscode.ViewColumn.One,
-			{ enableScripts: true }
+			{ enableScripts: true },
 		)
 
 		panel.webview.html = getWebviewContent()
-	});
+	})
 
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(disposable)
 }
 
-// This method is called when your extension is deactivated
+
 export function deactivate() {}
