@@ -39,12 +39,38 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.activate = activate;
 exports.deactivate = deactivate;
 const vscode = __importStar(require("vscode"));
+const ollama_1 = __importDefault(require("ollama"));
 const window_1 = __importDefault(require("./window"));
 function activate(context) {
     const disposable = vscode.commands.registerCommand('local-deepseek-r1-in-vscode.start', () => {
-        vscode.window.showInformationMessage('Hello World from Local DeepSeek-R1 in VSCode!');
         const panel = vscode.window.createWebviewPanel('deepChat', 'DeepSeek R-1 Chat', vscode.ViewColumn.One, { enableScripts: true });
         panel.webview.html = (0, window_1.default)();
+        panel.webview.onDidReceiveMessage(async (message) => {
+            if (message.command === 'chat') {
+                const userPrompt = message.text;
+                let responseText = '';
+                try {
+                    const streamResponse = await ollama_1.default.chat({
+                        model: 'deepseek-r1:14b',
+                        messages: [{ role: 'user', content: userPrompt }],
+                        stream: true,
+                    });
+                    for await (const part of streamResponse) {
+                        responseText += part.message.content;
+                        panel.webview.postMessage({
+                            command: 'chatResponse',
+                            text: responseText,
+                        });
+                    }
+                }
+                catch (err) {
+                    panel.webview.postMessage({
+                        command: 'chatResponse',
+                        text: `${String(err)}`,
+                    });
+                }
+            }
+        });
     });
     context.subscriptions.push(disposable);
 }
