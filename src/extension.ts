@@ -16,7 +16,8 @@ export function activate(context: vscode.ExtensionContext) {
 
 		panel.webview.onDidReceiveMessage(async (message: any) => {
 			if (message.command === 'chat') {
-				const userPrompt 	 = message.text;
+				const promptId 	   = message.promptId;
+				const userPrompt 	 = message.userPrompt;
 				let 	responseText = '';
 
 				try {
@@ -32,19 +33,28 @@ export function activate(context: vscode.ExtensionContext) {
 
 					for await (const part of streamResponse) {
 						responseText += part.message.content
-						// console.log(responseText)
+						console.log({
+							promptId:     promptId,
+							userPrompt:   userPrompt,
+							responseText: responseText,
+						})
 
 						panel.webview.postMessage({
-							command: 'chatResponse',
-							text: 	 responseText,
+							command:  'chatResponse',
+							promptId: promptId,
+							text: 	  responseText,
 						});
 					}
 				} catch (err) {
 					panel.webview.postMessage({
-						command: 'chatResponse',
-						text: 	 `${String(err)}`,
+						command:  'chatResponse',
+						// promptId: promptId,
+						text: 	  `${String(err)}`,
 					});
 				}
+			}
+			else if (message.command === 'cancel') {
+				ollama.abort()
 			}
 		});
 	});

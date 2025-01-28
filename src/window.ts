@@ -10,7 +10,7 @@ function getWebviewContent(): string {
         margin:      1rem;
       }
 
-      #prompt {
+      #userPromptInput {
         box-sizing: border-box;
         width:      100%;
       }
@@ -25,28 +25,53 @@ function getWebviewContent(): string {
   <body>
     <h2>Local DeepSeek-R1 in VSCode</h2>
     <form id="promptForm" action="#">
-      <textarea id="prompt" rows="3" placeholder="Ask me anything..."></textarea><br />
-      <button id="askBtn" type="submit">Ask</button>
+      <textarea id="userPromptInput" rows="4" placeholder="Ask anything..."></textarea><br />
+      <button id="askButton" type="submit">Ask</button>
+      <button id="cancelButton" type="reset">Cancel</button>
     </form>
     <div id="response"></div>
 
     <script>
       const vscode = acquireVsCodeApi();
+      let   history = [] // { prompt: "", response: "" }
 
       document.getElementById('promptForm').addEventListener('submit', (e) => {
         e.preventDefault() // Stop the form from submitting
 
-        const text = document.getElementById('prompt').value;
+        const promptId = history.length
+        const userPrompt     = document.getElementById('userPromptInput').value;
+
+        history[promptId] = {
+          userPrompt:   userPrompt,
+          responseText: "",
+        }
+
         vscode.postMessage({
-          command: 'chat',
-          text,
+          command:    'chat',
+          promptId:   promptId,
+          userPrompt: userPrompt,
+        });
+
+        userPrompt = "" // Clear the prompt textarea after a question has been asked
+      });
+
+      document.getElementById('cancelButton').addEventListener('click', (e) => {
+        e.preventDefault() // Stop the form from submitting
+
+        const promptId   = history.length
+        const userPrompt = document.getElementById('prompt').value;
+
+        vscode.postMessage({
+          command:  'cancel',
+          promptId: promptId,
         });
       });
 
       window.addEventListener('message', e => {
-        const { command, text } = e.data;
+        const { command, promptId, text } = e.data;
 
         if (command === 'chatResponse') {
+          history[promptId].responseText                = text
           document.getElementById('response').innerHTML = text;
         }
       });
