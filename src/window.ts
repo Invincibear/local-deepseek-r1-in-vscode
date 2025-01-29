@@ -1,4 +1,4 @@
-function getWebviewContent(): string {
+export default function getWebviewContent(): string {
   return /*html*/`
   <!DOCTYPE html>
   <html lang="en">
@@ -10,11 +10,11 @@ function getWebviewContent(): string {
         margin:      1rem;
       }
 
-      #userPromptInput {
+      textarea#userPrompt {
         box-sizing: border-box;
         width:      100%;
       }
-      #response {
+      div#response {
         border:     1px solid #ccc;
         margin-top: 1rem;
         min-height: 50vh;
@@ -25,40 +25,53 @@ function getWebviewContent(): string {
   <body>
     <h2>Local DeepSeek-R1 in VSCode</h2>
     <form id="promptForm" action="#">
-      <textarea id="userPromptInput" rows="4" placeholder="Ask anything..."></textarea><br />
+      <label for="r1Model">DeekSeek R1 Model to use: </label>
+      <select id="r1Model">
+        <option value="1.5b">1.5b</option>
+        <option value="7b">7b</option>
+        <option value="8b">8b</option>
+        <option value="14b" selected="selected">14b</option>
+        <option value="32b">32b</option>
+        <option value="70B">70B</option>
+      </select>
+      <textarea id="userPrompt" rows="4" placeholder="Ask anything..."></textarea><br />
       <button id="askButton" type="submit">Ask</button>
-      <button id="cancelButton" type="reset">Cancel</button>
+      <button id="cancelButton" style="visibility: none">Cancel</button>
     </form>
     <div id="response"></div>
 
     <script>
       const vscode = acquireVsCodeApi();
-      let   history = [] // { prompt: "", response: "" }
+      let   history = [] // { prompt: "", promptId: #, r1Model: "14b", responseText: "" }
 
       document.getElementById('promptForm').addEventListener('submit', (e) => {
-        e.preventDefault() // Stop the form from submitting
+        e.preventDefault(); // Stop the form from submitting
 
-        const promptId = history.length
-        const userPrompt     = document.getElementById('userPromptInput').value;
+        const promptId   = history.length;
+        const r1Model    = document.getElementById('r1Model').value;
+        const userPrompt = document.getElementById('userPrompt').value;
 
         history[promptId] = {
-          userPrompt:   userPrompt,
+          r1Model:      r1Model,
           responseText: "",
-        }
+          userPrompt:   userPrompt,
+        };
 
         vscode.postMessage({
           command:    'chat',
           promptId:   promptId,
+          r1Model:    r1Model,
           userPrompt: userPrompt,
         });
 
-        userPrompt = "" // Clear the prompt textarea after a question has been asked
+        // Clear the prompt textarea after a question has been asked
+        document.getElementById('userPrompt').value = "";
       });
 
       document.getElementById('cancelButton').addEventListener('click', (e) => {
-        e.preventDefault() // Stop the form from submitting
+        e.preventDefault(); // Stop the form from submitting
 
-        const promptId   = history.length
+        const promptId   = history.length;
         const userPrompt = document.getElementById('prompt').value;
 
         vscode.postMessage({
@@ -71,19 +84,21 @@ function getWebviewContent(): string {
         const { command, promptId, text } = e.data;
 
         if (command === 'chatResponse') {
-          history[promptId].responseText                = text
-          document.getElementById('response').innerHTML = text;
+          history[promptId].responseText                = text;
+          // document.getElementById('response').innerHTML = text;
+          updateResponseDiv();
         }
       });
 
       window.addEventListener('load', () => {
         document.getElementById('prompt').focus();
       });
+
+      function updateResponseDiv() {
+
+      }
     </script>
   </body>
   </html>
   `
 }
-
-
-export default getWebviewContent

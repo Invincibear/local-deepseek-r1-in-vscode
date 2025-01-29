@@ -4,8 +4,9 @@ import getWebviewContent from './window';
 
 
 export function activate(context: vscode.ExtensionContext) {
+	// const controller = new AbortController()
 	const disposable = vscode.commands.registerCommand('local-deepseek-r1-in-vscode.start', () => {
-		const panel = vscode.window.createWebviewPanel(
+	const panel      = vscode.window.createWebviewPanel(
 			'deepChat',
 			'DeepSeek R-1 Chat',
 			vscode.ViewColumn.One,
@@ -16,13 +17,14 @@ export function activate(context: vscode.ExtensionContext) {
 
 		panel.webview.onDidReceiveMessage(async (message: any) => {
 			if (message.command === 'chat') {
+				const r1Model      = message.r1Model;
 				const promptId 	   = message.promptId;
 				const userPrompt 	 = message.userPrompt;
-				let 	responseText = '';
+				let 	responseText = '<div class="r1Response">';
 
 				try {
 					const streamResponse = await ollama.chat({
-						model: 		'deepseek-r1:latest',
+						model: 		`deepseek-r1:${r1Model}`,
 						stream: 	true,
 
 						messages: [{
@@ -48,8 +50,16 @@ export function activate(context: vscode.ExtensionContext) {
 				} catch (err) {
 					panel.webview.postMessage({
 						command:  'chatResponse',
-						// promptId: promptId,
+						promptId: promptId,
 						text: 	  `${String(err)}`,
+					});
+				} finally {
+					responseText += "</div>"
+
+					panel.webview.postMessage({
+						command:  'chatResponse',
+						promptId: promptId,
+						text: 	  responseText,
 					});
 				}
 			}

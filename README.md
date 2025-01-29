@@ -3,7 +3,7 @@ Run DeepSeek R1 locally in VSCode
 
 ## How to run
 1. [Install Ollama](https://ollama.com/download)
-1. [Install DeepSeek-R1](https://ollama.com/library/deepseek-r1)
+1. [Install DeepSeek-R1](https://ollama.com/library/deepseek-r1) (this extension defaults to using the `14b` model, but can be changed in a drop-down list)
 1. Clone this repo
 1. Open the cloned repo in VSCode
 1. Enter Debug mode in VSCode by pressing `Ctrl` + `F5`. You can reload the debugged whenever you make code changes by pressing `Ctrl` + `Shift` + `F5`
