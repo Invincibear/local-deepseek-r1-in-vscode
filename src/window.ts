@@ -9,20 +9,10 @@ export default function getWebviewContent(): string {
         font-family: sans-serif;
         margin:      1rem;
       }
+      button {
+        height: 2rem;
+      }
 
-      textarea#userPrompt {
-        box-sizing: border-box;
-        width:      100%;
-      }
-      button#cancelButton {
-        display: none;
-      }
-      div#response {
-        border:     1px solid #ccc;
-        margin-top: 1rem;
-        min-height: 50vh;
-        padding:    0.5rem;
-      }
       div.history {
         border-radius: 25px;
         padding: 10px 20px;
@@ -47,11 +37,34 @@ export default function getWebviewContent(): string {
         position: relative;
         width: 50px
       }
+
+      div#response {
+        border:     1px solid #ccc;
+        margin-top: 1rem;
+        min-height: 50vh;
+        padding:    0.5rem;
+      }
+      textarea#userPrompt {
+        box-sizing: border-box;
+        width:      100%;
+      }
+      button#cancelButton {
+        display: none;
+      }
+      select#r1Model {
+        height: 1.5rem;
+      }
     </style>
   </head>
   <body>
     <h2>Local DeepSeek-R1 in VSCode</h2>
+    <div id="response"></div>
+    <br />
     <form id="promptForm" action="#">
+      <textarea id="userPrompt" rows="4" placeholder="Ask anything..."></textarea><br />
+      <button id="askButton" type="submit">Ask R1</button>
+      <button id="cancelButton">Cancel</button>
+      <br />
       <label for="r1Model">DeekSeek R1 Model to use: </label>
       <select id="r1Model">
         <option value="1.5b">1.5b</option>
@@ -61,11 +74,7 @@ export default function getWebviewContent(): string {
         <option value="32b">32b</option>
         <option value="70B">70B</option>
       </select>
-      <textarea id="userPrompt" rows="4" placeholder="Ask anything..."></textarea><br />
-      <button id="askButton" type="submit">Ask</button>
-      <button id="cancelButton">Cancel</button>
     </form>
-    <div id="response"></div>
 
     <script>
       const vscode         = acquireVsCodeApi();
