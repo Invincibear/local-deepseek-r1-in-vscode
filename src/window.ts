@@ -23,15 +23,29 @@ export default function getWebviewContent(): string {
         min-height: 50vh;
         padding:    0.5rem;
       }
+      div.history {
+        border-radius: 25px;
+        padding: 10px 20px;
+      }
       div.userPromptHistory {
+        background-color: rgba(50, 50, 50, 0.85);
         margin-left: 20%;
         margin-top: 3rem;
-        width: 80%;
+        width: calc(80% - 40px);
       }
       div.r1ResponseHistory {
+        background-color: rgb(35, 35, 35);
         margin-right: 20%;
-        margin-top: 2rem;
+        margin-top: 1rem;
         width: 80%;
+      }
+      div.r1Icon {
+        background: url(./favicon.ico);
+        border: 1px solid #ccc;
+        border-radius: 2px;
+        left: -25px;
+        position: relative;
+        width: 50px
       }
     </style>
   </head>
@@ -81,8 +95,8 @@ export default function getWebviewContent(): string {
         // Clear the prompt textarea after a question has been asked
         document.getElementById('userPrompt').value = "";
 
-        document.getElementById('response').innerHTML += '<div id="userPrompt-' + promptId + '" class="userPromptHistory">' + userPrompt + '</div>'
-        document.getElementById('response').innerHTML += '<div id="r1Response-' + promptId + '" class="r1ResponseHistory"></div>'
+        document.getElementById('response').innerHTML += '<div id="userPrompt-' + promptId + '" class="history userPromptHistory">' + userPrompt + '</div>'
+        document.getElementById('response').innerHTML += '<div id="r1Response-' + promptId + '" class="history r1ResponseHistory"></div>'
       });
 
       document.getElementById('cancelButton').addEventListener('click', (e) => {
