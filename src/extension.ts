@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
 				const r1Model      = message.r1Model;
 				const promptId 	   = message.promptId;
 				const userPrompt 	 = message.userPrompt;
-				let 	responseText = '<div class="r1Response">';
+				let 	responseText = '' // '<div class="r1ResponseHistory">';
 
 				try {
 					const streamResponse = await ollama.chat({
@@ -42,26 +42,33 @@ export function activate(context: vscode.ExtensionContext) {
 						})
 
 						panel.webview.postMessage({
-							command:  'chatResponse',
-							promptId: promptId,
-							text: 	  responseText,
+							command:      'chatResponse',
+							promptId:     promptId,
+							responseText: responseText,
 						});
 					}
 				} catch (err) {
 					panel.webview.postMessage({
-						command:  'chatResponse',
-						promptId: promptId,
-						text: 	  `${String(err)}`,
-					});
-				} finally {
-					responseText += "</div>"
-
-					panel.webview.postMessage({
-						command:  'chatResponse',
-						promptId: promptId,
-						text: 	  responseText,
+						command:  		'chatResponse',
+						promptId:		  promptId,
+						responseText: `${String(err)}`,
 					});
 				}
+				// } finally {
+				// 	responseText += "</div>"
+
+				// 	panel.webview.postMessage({
+				// 		command:      'chatResponse',
+				// 		promptId:     promptId,
+				// 		responseText: responseText, // TODO: trim \n\n\n\n from start, trim trailing newline from end
+				// 	});
+
+				// 	console.log({
+				// 		promptId:     promptId,
+				// 		userPrompt:   userPrompt,
+				// 		responseText: responseText, // TODO: trim \n\n\n\n from start, trim trailing newline from end
+				// 	})
+				// }
 			}
 			else if (message.command === 'cancel') {
 				ollama.abort()

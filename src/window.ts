@@ -20,6 +20,14 @@ export default function getWebviewContent(): string {
         min-height: 50vh;
         padding:    0.5rem;
       }
+      div.userPromptHistory {
+        with: 80%;
+        margin-right: 20%;
+      }
+      div.r1ResponseHistory {
+        with: 80%;
+        margin-left: 20%;
+      }
     </style>
   </head>
   <body>
@@ -41,20 +49,21 @@ export default function getWebviewContent(): string {
     <div id="response"></div>
 
     <script>
-      const vscode = acquireVsCodeApi();
-      let   history = [] // { prompt: "", promptId: #, r1Model: "14b", responseText: "" }
+      const vscode         = acquireVsCodeApi();
+      let   promptsHistory = [] // { promptId: #, r1Model: "14b", responseText: "", userPrompt: "" }
 
       document.getElementById('promptForm').addEventListener('submit', (e) => {
         e.preventDefault(); // Stop the form from submitting
 
-        const promptId   = history.length;
+        const promptId   = promptsHistory.length;
         const r1Model    = document.getElementById('r1Model').value;
         const userPrompt = document.getElementById('userPrompt').value;
 
-        history[promptId] = {
+        promptsHistory[promptId] = {
           r1Model:      r1Model,
           responseText: "",
           userPrompt:   userPrompt,
+          //userPrompt:   '<div class="userPromptHistory">' + userPrompt + '</div>',
         };
 
         vscode.postMessage({
@@ -66,12 +75,15 @@ export default function getWebviewContent(): string {
 
         // Clear the prompt textarea after a question has been asked
         document.getElementById('userPrompt').value = "";
+
+        document.getElementById('response').innerHTML += '<div id="userPrompt-' + promptId + '" class="userPromptHistory">' + userPrompt + '</div>'
+        document.getElementById('response').innerHTML += '<div id="r1Response-' + promptId + '" class="r1ResponseHistory"></div>'
       });
 
       document.getElementById('cancelButton').addEventListener('click', (e) => {
         e.preventDefault(); // Stop the form from submitting
 
-        const promptId   = history.length;
+        const promptId   = promptsHistory.length;
         const userPrompt = document.getElementById('prompt').value;
 
         vscode.postMessage({
@@ -81,22 +93,18 @@ export default function getWebviewContent(): string {
       });
 
       window.addEventListener('message', e => {
-        const { command, promptId, text } = e.data;
+        const { command, promptId, responseText } = e.data;
 
         if (command === 'chatResponse') {
-          history[promptId].responseText                = text;
-          // document.getElementById('response').innerHTML = text;
-          updateResponseDiv();
+          promptsHistory[promptId].responseText = responseText;
+          document.getElementById('r1Response-' + promptId).innerHTML = promptsHistory[promptId].responseText;
+          // updateResponseDiv();
         }
       });
 
       window.addEventListener('load', () => {
-        document.getElementById('prompt').focus();
+        document.getElementById('userPrompt').focus();
       });
-
-      function updateResponseDiv() {
-
-      }
     </script>
   </body>
   </html>
