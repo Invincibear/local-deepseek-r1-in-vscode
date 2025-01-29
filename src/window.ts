@@ -14,6 +14,9 @@ export default function getWebviewContent(): string {
         box-sizing: border-box;
         width:      100%;
       }
+      button#cancelButton {
+        display: none;
+      }
       div#response {
         border:     1px solid #ccc;
         margin-top: 1rem;
@@ -21,12 +24,14 @@ export default function getWebviewContent(): string {
         padding:    0.5rem;
       }
       div.userPromptHistory {
-        with: 80%;
-        margin-right: 20%;
+        margin-left: 20%;
+        margin-top: 3rem;
+        width: 80%;
       }
       div.r1ResponseHistory {
-        with: 80%;
-        margin-left: 20%;
+        margin-right: 20%;
+        margin-top: 2rem;
+        width: 80%;
       }
     </style>
   </head>
@@ -44,7 +49,7 @@ export default function getWebviewContent(): string {
       </select>
       <textarea id="userPrompt" rows="4" placeholder="Ask anything..."></textarea><br />
       <button id="askButton" type="submit">Ask</button>
-      <button id="cancelButton" style="visibility: none">Cancel</button>
+      <button id="cancelButton">Cancel</button>
     </form>
     <div id="response"></div>
 
